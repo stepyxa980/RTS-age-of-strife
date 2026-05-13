@@ -20,27 +20,43 @@ bool render_init(RenderContext* ctx) {
     }
 
     SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_BLEND);
+
+    ctx->entity_texture = SDL_CreateTexture(ctx->renderer, SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_STATIC, 16, 16);
+    if (!ctx->entity_texture) {
+        LOG_ERR("SDL_CreateTexture: %s\n", SDL_GetError());
+        return false;
+    }
+    uint32_t pixels[16 * 16];
+    memset(pixels, 0xFF, sizeof(pixels));
+    SDL_UpdateTexture(ctx->entity_texture, NULL, pixels, 16 * sizeof(uint32_t));
+
     return true;
 }
 
 void render_cleanup(RenderContext* ctx) {
     if (!ctx) return;
+    if (ctx->entity_texture) SDL_DestroyTexture(ctx->entity_texture);
     if (ctx->renderer) SDL_DestroyRenderer(ctx->renderer);
     if (ctx->window) SDL_DestroyWindow(ctx->window);
 }
 
-void render_draw(const RenderContext *ctx, const GameState *state, double interpolation) {
+void render_draw(RenderContext *ctx, const GameState *state, const InputState *input, double interpolation) {
     if (!ctx || !state) return;
     (void)interpolation;
 
     SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->renderer);
 
-    pool_render((EntityPool*)&state->pool, (GameState*)state, ctx->renderer);
+    pool_render((EntityPool*)&state->pool, (GameState*)state, ctx->renderer, ctx->entity_texture);
 
     SDL_SetRenderDrawColor(ctx->renderer, 80, 80, 80, 255);
     SDL_Rect border = {0,0, WINDOW_WIDTH, WINDOW_HEIGHT};
     SDL_RenderDrawRect(ctx->renderer, &border);
+
+    SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 200);
+    SDL_Rect cursor = {(int)input->mouse_x - 2, (int)input->mouse_y - 2, 4, 4};
+    SDL_RenderFillRect(ctx->renderer, &cursor);
 
     SDL_RenderPresent(ctx->renderer);
 }

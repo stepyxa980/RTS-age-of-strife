@@ -59,11 +59,9 @@ void handle_events(InputState *input, bool *running) {
 
 void input_clear(InputState* input) {
     if (!input) return;
-    
     memset(input->key_just_pressed, 0, sizeof(input->key_just_pressed));
     memset(input->key_just_released, 0, sizeof(input->key_just_released));
     memset(input->mouse_just_pressed, 0, sizeof(input->mouse_just_pressed));
     memset(input->mouse_just_released, 0, sizeof(input->mouse_just_released));
-
     input->mouse_wheel = 0;
 }

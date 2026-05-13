@@ -34,4 +34,4 @@ void pool_init(EntityPool *p);
 int pool_spawn(EntityPool *p, float x, float y, SDL_Color color);
 void pool_despawn(EntityPool *p, int id);
 void pool_update(EntityPool *p, float dt, float map_w, float map_h);
-void pool_render(EntityPool *p, GameState *state, SDL_Renderer *renderer);
+void pool_render(EntityPool *p, GameState *state, SDL_Renderer *renderer, SDL_Texture *texture);
