@@ -65,3 +65,7 @@ void input_clear(InputState* input) {
     memset(input->mouse_just_released, 0, sizeof(input->mouse_just_released));
     input->mouse_wheel = 0;
 }
+
+void input_update_world_coords(InputState *input, const Camera *cam) {
+    camera_screen_to_world(cam, input->mouse_x, input->mouse_y, &input->world_mouse_x, &input->world_mouse_y);
+}

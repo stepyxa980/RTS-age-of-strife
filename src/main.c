@@ -46,7 +46,7 @@ int main(int argc, char *args[]) {
 
         prof_start(&t_udp);
         while (accumulator >= DT) {
-            game_update(&state, &input, DT);
+            game_update(&state, &input, DT, WINDOW_WIDTH, WINDOW_HEIGHT, MAP_W, MAP_H);
             input_clear(&input);
             accumulator -= DT;
         }
@@ -54,7 +54,7 @@ int main(int argc, char *args[]) {
 
         double interp = accumulator / DT;
         prof_start(&t_rnd);
-        render_draw(&render_ctx, &state, &input, interp);
+        render_draw(&render_ctx, &state, &input, interp); // &&&&&
         prof_end(t_rnd, false);
 
         uint64_t current_time = SDL_GetPerformanceCounter();

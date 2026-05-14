@@ -65,29 +65,29 @@ void pool_update(EntityPool *p, float dt, float map_w, float map_h) {
     }
 }
 
-void pool_render(EntityPool *p, GameState *state, SDL_Renderer *renderer, SDL_Texture *texture) {
+void pool_render(EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, const Camera *cam) {
     (void)texture;
-    const float zoom = state->zoom;
-
     for (int i = 0; i < MAX_ENTITIES; ++i) {
         const Entity* e = &p->entities[i];
         if (!e->active) continue;
 
+        float sx, sy;
+        canera_world_to_screen(cam, e->pos.x, e->pos.y, &sx, &sy);
+        if (sx < -20 || sx > WINDOW_WIDTH + 20 || sy < -20 || sy > WINDOW_HEIGHT + 20) continue;
+        
+        float size = 16.0f * cam->zoom;
         SDL_Rect rect = {
-            (int)((e->pos.x - state->camera.x) * zoom),
-            (int)((e->pos.y - state->camera.y) * zoom),
-            (int)(e->size * zoom),
-            (int)(e->size * zoom)
+            (int)(sx),
+            (int)(sy),
+            (int)(size),
+            (int)(size)
         };
-
-        if (rect.x + rect.w < 0 || rect.y + rect.h < 0 ||
-            rect.x > WINDOW_WIDTH || rect.y > WINDOW_HEIGHT) continue;
 
         SDL_SetRenderDrawColor(renderer, e->color.r, e->color.g, e->color.b, e->color.a);
         SDL_RenderFillRect(renderer, &rect);
 
         if (e->selected) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_RenderFillRect(renderer, &rect);
         }
     }

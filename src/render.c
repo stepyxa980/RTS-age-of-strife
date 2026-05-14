@@ -48,10 +48,13 @@ void render_draw(RenderContext *ctx, const GameState *state, const InputState *i
     SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->renderer);
 
-    pool_render((EntityPool*)&state->pool, (GameState*)state, ctx->renderer, ctx->entity_texture);
+    pool_render((EntityPool*)&state->pool, ctx->renderer, ctx->entity_texture, &state->camera);
 
-    SDL_SetRenderDrawColor(ctx->renderer, 80, 80, 80, 255);
-    SDL_Rect border = {0,0, WINDOW_WIDTH, WINDOW_HEIGHT};
+    float sx1, sy1, sx2, sy2;
+    canera_world_to_screen(&state->camera, 0, 0, &sx1, &sy1);
+    canera_world_to_screen(&state->camera, MAP_W, MAP_H, &sx2, &sy2);
+    SDL_Rect border = {(int)sx1, (int)sy1, (int)(sx2 - sx1), (int)(sy2 - sy1)};
+    SDL_SetRenderDrawColor(ctx->renderer, 100, 100, 100, 255);
     SDL_RenderDrawRect(ctx->renderer, &border);
 
     SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 200);

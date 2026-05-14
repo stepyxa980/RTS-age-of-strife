@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include "common.h"
+#include "camera.h"
 
 typedef struct {
     bool keys[MAX_KEYS];
@@ -9,6 +10,7 @@ typedef struct {
     bool key_just_released[MAX_KEYS];
 
     float mouse_x, mouse_y;
+    float world_mouse_x, world_mouse_y;
     bool mouse_buttons[MAX_MOUSE_BTNS];
     bool mouse_just_pressed[MAX_MOUSE_BTNS];
     bool mouse_just_released[MAX_MOUSE_BTNS];
@@ -20,3 +22,4 @@ typedef struct {
 void input_init(InputState* input);
 void handle_events(InputState *input, bool *running);
 void input_clear(InputState *input);
+void input_update_world_coords(InputState *input, const Camera *cam);
