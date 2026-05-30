@@ -46,8 +46,8 @@ static inline void profiler_log_fps(double frame_time_ms) {
     static int fps_frames = 0;
     fps_acc += frame_time_ms;
     fps_frames++;
-        double fps = (double)fps_frames / fps_acc;
-        printf("FPS: %.1f | ", fps);
-        fps_acc = 0.0;
-        fps_frames = 0;
+    double fps = (double)fps_frames / fps_acc;
+    printf("FPS: %.1f | ", fps);
+    fps_acc = 0.0;
+    fps_frames = 0;
 }

@@ -34,12 +34,25 @@ void handle_events(InputState *input, bool *running) {
             case SDL_MOUSEMOTION:
                 input->mouse_x = (float)event.motion.x;
                 input->mouse_y = (float)event.motion.y;
+                if (input->is_mouse_held) {
+                    float dx = input->mouse_x - input->drag_start_sx;
+                    float dy = input->mouse_y - input->drag_start_sy;
+                    if (hypotf(dx, dy) > DRAG_THRESHOLD) input ->is_dragging = true;
+                }
                 break;
             
             case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button >= 1 && event.button.button <= MAX_MOUSE_BTNS) {
+                /*if (event.button.button >= 1 && event.button.button <= MAX_MOUSE_BTNS) {
                     input->mouse_buttons[event.button.button - 1] = true;
                     input->mouse_just_pressed[event.button.button - 1] = true;
+                }*/
+                if (event.button.button == 1) {
+                    input->mouse_buttons[0] = true;
+                    input->mouse_just_pressed[0] = true;
+                    input->is_mouse_held = true;
+                    input->is_dragging = false;
+                    input->drag_start_sx = (float)event.button.x;
+                    input->drag_start_sy = (float)event.button.y;
                 }
                 break;
 
@@ -47,6 +60,7 @@ void handle_events(InputState *input, bool *running) {
                 if (event.button.button >= 1 && event.button.button <= MAX_MOUSE_BTNS) {
                     input->mouse_buttons[event.button.button - 1] = false;
                     input->mouse_just_released[event.button.button - 1] = true;
+                    if (event.button.button == 1) input->is_mouse_held = false;
                 }
                 break;
             
@@ -68,4 +82,6 @@ void input_clear(InputState* input) {
 
 void input_update_world_coords(InputState *input, const Camera *cam) {
     camera_screen_to_world(cam, input->mouse_x, input->mouse_y, &input->world_mouse_x, &input->world_mouse_y);
+    input->drag_curr_wx = input->world_mouse_x;
+    input->drag_curr_wy = input->world_mouse_y;
 }

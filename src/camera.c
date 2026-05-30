@@ -29,7 +29,7 @@ void camera_screen_to_world(const Camera *cam, float sx, float sy, float *out_wx
     *out_wy = (sy / cam->zoom) + cam->pos.y;
 }
 
-void canera_world_to_screen(const Camera *cam, float wx, float wy, float *out_sx, float *out_sy) {
+void camera_world_to_screen(const Camera *cam, float wx, float wy, float *out_sx, float *out_sy) {
     *out_sx = (wx - cam->pos.x) * cam->zoom;
     *out_sy = (wy - cam->pos.y) * cam->zoom;
 }

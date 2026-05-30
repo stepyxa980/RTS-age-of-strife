@@ -1,4 +1,5 @@
 #include "game.h"
+#include "selection.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -41,7 +42,7 @@ void game_update(GameState *state, const InputState *input, double dt, float scr
         camera_zoom(&state->camera, input->mouse_wheel);
     }
 
-    if (input->mouse_just_pressed[2]) {
+    if (input->mouse_just_pressed[1]) {
         pool_spawn(&state->pool, input->world_mouse_x - 8.0f, input->world_mouse_y - 8.0f, (SDL_Color){0, 100, 200, 255});
     }
 
@@ -52,6 +53,16 @@ void game_update(GameState *state, const InputState *input, double dt, float scr
                 break;
             }
         }
+    }
+
+    if (input->mouse_just_pressed[0]) {
+        selection_click(&state->pool, input->world_mouse_x, input->world_mouse_y);
+    }
+
+    if (input->mouse_just_released[0] && input->is_dragging) {
+        float start_wx, start_wy;
+        camera_screen_to_world(&state->camera, input->drag_start_sx, input->drag_start_sy, &start_wx, &start_wy);
+        selection_drag(&state->pool, start_wx, start_wy, input->drag_curr_wx, input->drag_curr_wy);
     }
 
     if (input->key_just_pressed[SDL_SCANCODE_SPACE]) {

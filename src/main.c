@@ -43,6 +43,7 @@ int main(int argc, char *args[]) {
         accumulator += frame_time;
 
         handle_events(&input, &running);
+        input_update_world_coords(&input, &state.camera);
 
         prof_start(&t_udp);
         while (accumulator >= DT) {

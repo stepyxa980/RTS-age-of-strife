@@ -51,15 +51,37 @@ void render_draw(RenderContext *ctx, const GameState *state, const InputState *i
     pool_render((EntityPool*)&state->pool, ctx->renderer, ctx->entity_texture, &state->camera);
 
     float sx1, sy1, sx2, sy2;
-    canera_world_to_screen(&state->camera, 0, 0, &sx1, &sy1);
-    canera_world_to_screen(&state->camera, MAP_W, MAP_H, &sx2, &sy2);
+    camera_world_to_screen(&state->camera, 0, 0, &sx1, &sy1);
+    camera_world_to_screen(&state->camera, MAP_W, MAP_H, &sx2, &sy2);
     SDL_Rect border = {(int)sx1, (int)sy1, (int)(sx2 - sx1), (int)(sy2 - sy1)};
-    SDL_SetRenderDrawColor(ctx->renderer, 100, 100, 100, 255);
+    SDL_SetRenderDrawColor(ctx->renderer, 120, 120, 120, 255);
     SDL_RenderDrawRect(ctx->renderer, &border);
 
-    SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 200);
+    /*SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 200);
     SDL_Rect cursor = {(int)input->mouse_x - 2, (int)input->mouse_y - 2, 4, 4};
     SDL_RenderFillRect(ctx->renderer, &cursor);
+
+    SDL_RenderPresent(ctx->renderer);*/
+
+    if (input->is_mouse_held && input->is_dragging) {
+        float start_wx, start_wy;
+        camera_screen_to_world(&state->camera, input->drag_start_sx, input->drag_start_sy, &start_wx, &start_wy);
+
+        float wrx1 = fminf(input->drag_curr_wx, start_wx);
+        float wry1 = fminf(input->drag_curr_wy, start_wy);
+        float wrx2 = fmaxf(input->drag_curr_wx, start_wx);
+        float wry2 = fmaxf(input->drag_curr_wy, start_wy);
+
+        float ssx1, ssy1, ssx2, ssy2;
+        camera_world_to_screen(&state->camera, wrx1, wry1, &ssx1, &ssy1);
+        camera_world_to_screen(&state->camera, wrx2, wry2, &ssx2, &ssy2);
+
+        SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 80);
+        SDL_Rect rect = {(int)ssx1, (int)ssy1, (int)(ssx2 - ssx1), (int)(ssy2 - ssy1)};
+        SDL_RenderFillRect(ctx->renderer, &rect);
+        SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_NONE);
+    }
 
     SDL_RenderPresent(ctx->renderer);
 }

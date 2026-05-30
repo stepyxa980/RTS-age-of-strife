@@ -72,7 +72,7 @@ void pool_render(EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, co
         if (!e->active) continue;
 
         float sx, sy;
-        canera_world_to_screen(cam, e->pos.x, e->pos.y, &sx, &sy);
+        camera_world_to_screen(cam, e->pos.x, e->pos.y, &sx, &sy);
         if (sx < -20 || sx > WINDOW_WIDTH + 20 || sy < -20 || sy > WINDOW_HEIGHT + 20) continue;
         
         float size = 16.0f * cam->zoom;
@@ -83,12 +83,11 @@ void pool_render(EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, co
             (int)(size)
         };
 
-        SDL_SetRenderDrawColor(renderer, e->color.r, e->color.g, e->color.b, e->color.a);
-        SDL_RenderFillRect(renderer, &rect);
-
         if (e->selected) {
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            SDL_RenderFillRect(renderer, &rect);
+            SDL_SetRenderDrawColor(renderer, 255, 60, 60, 255);
+        } else {
+            SDL_SetRenderDrawColor(renderer, e->color.r, e->color.g, e->color.b, e->color.a);
         }
+        SDL_RenderFillRect(renderer, &rect);
     }
 }
