@@ -48,7 +48,7 @@ void render_draw(RenderContext *ctx, const GameState *state, const InputState *i
     SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->renderer);
 
-    pool_render((EntityPool*)&state->pool, ctx->renderer, ctx->entity_texture, &state->camera);
+    pool_render(&state->pool, ctx->renderer, ctx->entity_texture, &state->camera);
 
     float sx1, sy1, sx2, sy2;
     camera_world_to_screen(&state->camera, 0, 0, &sx1, &sy1);

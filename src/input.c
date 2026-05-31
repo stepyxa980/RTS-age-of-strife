@@ -42,13 +42,11 @@ void handle_events(InputState *input, bool *running) {
                 break;
             
             case SDL_MOUSEBUTTONDOWN:
-                /*if (event.button.button >= 1 && event.button.button <= MAX_MOUSE_BTNS) {
+                if (event.button.button >= 1 && event.button.button <= MAX_MOUSE_BTNS) {
                     input->mouse_buttons[event.button.button - 1] = true;
                     input->mouse_just_pressed[event.button.button - 1] = true;
-                }*/
+                }
                 if (event.button.button == 1) {
-                    input->mouse_buttons[0] = true;
-                    input->mouse_just_pressed[0] = true;
                     input->is_mouse_held = true;
                     input->is_dragging = false;
                     input->drag_start_sx = (float)event.button.x;

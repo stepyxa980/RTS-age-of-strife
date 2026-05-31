@@ -8,12 +8,11 @@
 typedef struct {
     bool active;
     bool selected;
-    int id;
+    bool is_moving;
     Vec2 pos;
-    Vec2 vel;
+    Vec2 target;
     float speed;
     int size;
-    float target_x, target_y;
     uint8_t uint_type;
     SDL_Color color;
 } Entity;
@@ -34,4 +33,4 @@ void pool_init(EntityPool *p);
 int pool_spawn(EntityPool *p, float x, float y, SDL_Color color);
 void pool_despawn(EntityPool *p, int id);
 void pool_update(EntityPool *p, float dt, float map_w, float map_h);
-void pool_render(EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, const Camera *cam);
+void pool_render(const EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, const Camera *cam);

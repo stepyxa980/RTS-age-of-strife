@@ -24,7 +24,7 @@ void game_init(GameState *state) {
 
     pool_init(&state->pool);
     state->tick_count = 0;
-    spawn_grid(&state->pool, 512, 14.0f, 20.0f, 20.0f, (SDL_Color){0, 200, 100, 255});
+    spawn_grid(&state->pool, 32, 14.0f, 20.0f, 20.0f, (SDL_Color){0, 200, 100, 255});
 }
 
 void game_update(GameState *state, const InputState *input, double dt, float screen_w, float screen_h, float world_w, float world_h) {
@@ -51,6 +51,17 @@ void game_update(GameState *state, const InputState *input, double dt, float scr
             if (state->pool.entities[i].active) {
                 pool_despawn(&state->pool, i);
                 break;
+            }
+        }
+    }
+
+    if (input->mouse_just_pressed[2]) {
+        for (int i = 0; i < MAX_ENTITIES; ++i) {
+            Entity *en = &state->pool.entities[i];
+            if (en->active && en->selected) {
+                en->target.x = input->world_mouse_x;
+                en->target.y = input->world_mouse_y;
+                en->is_moving = true;
             }
         }
     }

@@ -1,13 +1,15 @@
 #include "entity_pool.h"
 #include "common.h"
+#include <math.h>
+
+#define SEP_DIST 24.0f
+#define SEP_FORCE 100.0f
 
 void pool_init(EntityPool *p) {
     for (int i = 0; i < MAX_ENTITIES; ++i) {
         Entity *en = &p->entities[i];
         en->active = false;
-        en->id = -1;
         en->pos.x = en->pos.y = 0.0f;
-        en->vel.x = en->vel.y = 0.0f;
         en->speed = 0.0f;
         en->size = 16;
         en->color = (SDL_Color){255, 255, 255, 255};
@@ -24,11 +26,13 @@ int pool_spawn(EntityPool *p, float x, float y, SDL_Color color) {
     int idx = p->first_free;
     Entity *en = &p->entities[idx];
     en->active = true;
-    en->id = idx;
+    en->selected = false;
+    en->is_moving = false;
     en->pos.x = x;
     en->pos.y = y;
-    en->vel.x = 300.0f;
-    en->vel.y = 300.0f * (idx % 2 ? 1 : -1);
+    en->target.x = x;
+    en->target.y = y;
+    en->speed = 100.0f;
     en->color = color;
     p->entity_count++;
     p->first_free = idx + 1;
@@ -52,20 +56,62 @@ void pool_despawn(EntityPool *p, int id) {
 }
 
 void pool_update(EntityPool *p, float dt, float map_w, float map_h) {
+    (void)map_h; (void)map_w;
     for (int i = 0; i < MAX_ENTITIES; ++i) {
         Entity *en = &p->entities[i];
         if (!en->active) continue;
 
-        en->pos.x += en->vel.x * dt;
-        en->pos.y += en->vel.y * dt;
+        Vec2 move_dir = {0, 0};
+        if (en->is_moving) {
+            float dx = en->target.x - en->pos.x;
+            float dy = en->target.y - en->pos.y;
+            float dist = sqrtf(dx*dx + dy*dy);
 
-        float size = (float)en->size;
-        if (en->pos.x <= 0.0 || en->pos.x >= map_w - size) en->vel.x *= -1.0f;
-        if (en->pos.y <= 0.0 || en->pos.y >= map_h - size) en->vel.y *= -1.0f;
+            if (dist > 1.0f) {
+                move_dir.x += (dx / dist) * en->speed;
+                move_dir.y += (dy / dist) * en->speed;
+            } else {
+                en->is_moving = false;
+            }
+        }
+
+        Vec2 separation = {0, 0};
+        int neighbors = 0;
+        for (int j = 0; j < MAX_ENTITIES; ++j) {
+            if (i == j) continue;
+            Entity *other = &p->entities[j];
+            if (!other->active) continue;
+
+            float dx = en->pos.x - other->pos.x;
+            float dy = en->pos.y - other->pos.y;
+            float dist_sq = dx*dx + dy*dy;
+
+            if (dist_sq < (SEP_DIST * SEP_DIST) && dist_sq > 0.001f) {
+                float dist = sqrtf(dist_sq);
+                float force = (SEP_DIST - dist) / SEP_DIST;
+                separation.x += (dx / dist) * force;
+                separation.y += (dy / dist) * force;
+                neighbors++;
+            }
+        }
+
+        if (neighbors > 0) {
+            separation.x *= SEP_FORCE;
+            separation.y *= SEP_FORCE;
+
+            move_dir.x += separation.x;
+            move_dir.y += separation.y;
+        }
+
+        en->pos.x += move_dir.x * dt;
+        en->pos.y += move_dir.y * dt;
+
+        en->pos.x = CLAMP(en->pos.x, 0, map_w - en->size);
+        en->pos.y = CLAMP(en->pos.y, 0, map_h - en->size);
     }
 }
 
-void pool_render(EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, const Camera *cam) {
+void pool_render(const EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, const Camera *cam) {
     (void)texture;
     for (int i = 0; i < MAX_ENTITIES; ++i) {
         const Entity* e = &p->entities[i];

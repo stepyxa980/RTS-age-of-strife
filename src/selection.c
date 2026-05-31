@@ -1,4 +1,5 @@
 #include "selection.h"
+#include <math.h>
 
 bool point_in_rect(float px, float py, float rx1, float ry1, float rx2, float ry2) {
     return px >= rx1 && px <= rx2 && py >= ry1 && py <= ry2;
