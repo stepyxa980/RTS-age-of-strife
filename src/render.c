@@ -57,12 +57,6 @@ void render_draw(RenderContext *ctx, const GameState *state, const InputState *i
     SDL_SetRenderDrawColor(ctx->renderer, 120, 120, 120, 255);
     SDL_RenderDrawRect(ctx->renderer, &border);
 
-    /*SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 200);
-    SDL_Rect cursor = {(int)input->mouse_x - 2, (int)input->mouse_y - 2, 4, 4};
-    SDL_RenderFillRect(ctx->renderer, &cursor);
-
-    SDL_RenderPresent(ctx->renderer);*/
-
     if (input->is_mouse_held && input->is_dragging) {
         float start_wx, start_wy;
         camera_screen_to_world(&state->camera, input->drag_start_sx, input->drag_start_sy, &start_wx, &start_wy);

@@ -6,15 +6,17 @@
 #include "camera.h"
 
 typedef struct {
-    bool active;
-    bool selected;
-    bool is_moving;
-    Vec2 pos;
     Vec2 target;
+    Vec2 pos;
     float speed;
-    int size;
-    uint8_t uint_type;
+
     SDL_Color color;
+    int uint_type;
+    int size;
+
+    bool active;
+    bool is_moving;
+    bool selected;
 } Entity;
 
 typedef struct {
@@ -24,9 +26,9 @@ typedef struct {
 }   EntityPool;
 
 typedef struct {
+    int tick_count;
     Camera camera;
     EntityPool pool;
-    int tick_count;
 } GameState;
 
 void pool_init(EntityPool *p);

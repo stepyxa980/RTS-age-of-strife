@@ -56,27 +56,30 @@ void pool_despawn(EntityPool *p, int id) {
 }
 
 void pool_update(EntityPool *p, float dt, float map_w, float map_h) {
-    (void)map_h; (void)map_w;
+    const float SEP_DIST_SQ = SEP_DIST * SEP_DIST;
+    const float ARRIVE_THRESH_SQ = 1.0f; 
+
     for (int i = 0; i < MAX_ENTITIES; ++i) {
         Entity *en = &p->entities[i];
         if (!en->active) continue;
 
-        Vec2 move_dir = {0, 0};
+        Vec2 velocity = {0.0f, 0.0f};
+
         if (en->is_moving) {
             float dx = en->target.x - en->pos.x;
             float dy = en->target.y - en->pos.y;
-            float dist = sqrtf(dx*dx + dy*dy);
+            float dist_sq = dx*dx + dy*dy;
 
-            if (dist > 1.0f) {
-                move_dir.x += (dx / dist) * en->speed;
-                move_dir.y += (dy / dist) * en->speed;
+            if (dist_sq > ARRIVE_THRESH_SQ) {
+                float inv_dist = 1.0f / sqrtf(dist_sq);
+                velocity.x = dx * inv_dist * en->speed;
+                velocity.y = dy * inv_dist * en->speed;
             } else {
                 en->is_moving = false;
             }
         }
 
-        Vec2 separation = {0, 0};
-        int neighbors = 0;
+        Vec2 separation = {0.0f, 0.0f};
         for (int j = 0; j < MAX_ENTITIES; ++j) {
             if (i == j) continue;
             Entity *other = &p->entities[j];
@@ -86,28 +89,21 @@ void pool_update(EntityPool *p, float dt, float map_w, float map_h) {
             float dy = en->pos.y - other->pos.y;
             float dist_sq = dx*dx + dy*dy;
 
-            if (dist_sq < (SEP_DIST * SEP_DIST) && dist_sq > 0.001f) {
+            if (dist_sq < SEP_DIST_SQ && dist_sq > 0.0001f) {
                 float dist = sqrtf(dist_sq);
                 float force = (SEP_DIST - dist) / SEP_DIST;
-                separation.x += (dx / dist) * force;
-                separation.y += (dy / dist) * force;
-                neighbors++;
+                
+                float inv_dist = 1.0f / dist;
+                separation.x += dx * inv_dist * force * SEP_FORCE;
+                separation.y += dy * inv_dist * force * SEP_FORCE;
             }
         }
 
-        if (neighbors > 0) {
-            separation.x *= SEP_FORCE;
-            separation.y *= SEP_FORCE;
+        en->pos.x += (velocity.x + separation.x) * dt;
+        en->pos.y += (velocity.y + separation.y) * dt;
 
-            move_dir.x += separation.x;
-            move_dir.y += separation.y;
-        }
-
-        en->pos.x += move_dir.x * dt;
-        en->pos.y += move_dir.y * dt;
-
-        en->pos.x = CLAMP(en->pos.x, 0, map_w - en->size);
-        en->pos.y = CLAMP(en->pos.y, 0, map_h - en->size);
+        en->pos.x = CLAMP(en->pos.x, 0.0f, map_w - (float)en->size);
+        en->pos.y = CLAMP(en->pos.y, 0.0f, map_h - (float)en->size);
     }
 }
 

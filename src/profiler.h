@@ -36,7 +36,7 @@ static inline void prof_log(void) {
         u += g_upd_prof[i];
         r += g_rnd_prof[i];
     }
-    printf("[PROF] Avg Update: %.2fms | Render: %.2fms | Samples: %d\n", 
+    printf("[PROF] Avg Update: %.3fms | Render: %.3fms | Samples: %d\n", 
         u/g_prof_idx, r/g_prof_idx, g_prof_idx);
     g_prof_idx = 0;
 }
