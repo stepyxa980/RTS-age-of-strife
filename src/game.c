@@ -56,14 +56,7 @@ void game_update(GameState *state, const InputState *input, double dt, float scr
     }
 
     if (input->mouse_just_pressed[2]) {
-        for (int i = 0; i < MAX_ENTITIES; ++i) {
-            Entity *en = &state->pool.entities[i];
-            if (en->active && en->selected) {
-                en->target.x = input->world_mouse_x;
-                en->target.y = input->world_mouse_y;
-                en->is_moving = true;
-            }
-        }
+        pool_move_selected(&state->pool, input->world_mouse_x, input->world_mouse_y);
     }
 
     if (input->mouse_just_pressed[0]) {

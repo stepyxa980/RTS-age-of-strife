@@ -55,7 +55,7 @@ int main(int argc, char *args[]) {
 
         double interp = accumulator / DT;
         prof_start(&t_rnd);
-        render_draw(&render_ctx, &state, &input, interp); // &&&&&
+        render_draw(&render_ctx, &state, &input, interp);
         prof_end(t_rnd, false);
 
         uint64_t current_time = SDL_GetPerformanceCounter();

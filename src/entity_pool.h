@@ -9,9 +9,10 @@ typedef struct {
     Vec2 target;
     Vec2 pos;
     float speed;
+    float fatigue;
 
     SDL_Color color;
-    int uint_type;
+    int unit_type;
     int size;
 
     bool active;
@@ -35,4 +36,5 @@ void pool_init(EntityPool *p);
 int pool_spawn(EntityPool *p, float x, float y, SDL_Color color);
 void pool_despawn(EntityPool *p, int id);
 void pool_update(EntityPool *p, float dt, float map_w, float map_h);
+void pool_move_selected(EntityPool *p, float target_x, float target_y);
 void pool_render(const EntityPool *p, SDL_Renderer *renderer, SDL_Texture *texture, const Camera *cam);
